@@ -12,11 +12,33 @@ def get_projects(api):
         print(error)
 
 
+def get_project_by_id(api, id):
+    try:
+        project = api.get_project(project_id=id)
+        return project
+    except Exception as error:
+        print(error)
+
+
+def get_tasks_by_project_id(api, project_id):
+    try:
+        tasks = api.get_tasks(project_id=project_id)
+        return tasks
+    except Exception as error:
+        print(error)
+
+
+def print_tasks(tasks):
+    for task in tasks:
+        print(task)
+
+
 def main():    
     token = sys.argv[1]
+    project_id = sys.argv[2]
     api = TodoistAPI(token)
-    projects = get_projects(api)
-    print(projects)
+    tasks = get_tasks_by_project_id(api, project_id)
+    print_tasks(tasks)
 
 
 if __name__ == '__main__':
