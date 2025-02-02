@@ -1,6 +1,7 @@
 import sys
 import json
 import random
+import argparse
 from todoist_api_python.api_async import TodoistAPIAsync
 from todoist_api_python.api import TodoistAPI
 
@@ -39,12 +40,41 @@ def print_tasks(tasks):
         print(task)
 
 
-def main():    
-    token = sys.argv[1]
-    project_id = sys.argv[2]
-    api = TodoistAPI(token)
-    tasks = get_tasks_by_project_id(api, project_id)
-    selected_random_tasks = get_random_tasks(tasks, 1)
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-t", "--token", help="Todoist API token.")
+    parser.add_argument("-p", "--project-id", help="ID of the Todoist project you want to select tasks from.")
+    parser.add_argument("-n", "--number-of-tasks", help="Number of random tasks you want to return.")
+    args = parser.parse_args()
+
+    options = {}
+
+    if args.token:
+        options["token"] = args.token
+    else:
+        raise Exception("-t, --token must be provided")
+    
+    if args.project_id:
+        options["project_id"] = args.project_id
+    else:
+        raise Exception("-p, --project-id must be provided")
+    
+    if args.number_of_tasks:
+        options["number_of_tasks"] = args.number_of_tasks
+    else:
+        options["number_of_tasks"] = 1
+        print("[INFO]: -n, --number-of-tasks not provided, using default value of: 1")
+
+    return options
+
+
+def main():
+    options = parse_args()    
+    
+    api = TodoistAPI(options["token"])
+    tasks = get_tasks_by_project_id(api, options["project_id"])
+    selected_random_tasks = get_random_tasks(tasks, options["number_of_tasks"])
+
     print_tasks(selected_random_tasks)
 
 
